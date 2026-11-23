@@ -614,10 +614,10 @@ const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
   let p=0,target=0,done=false,finishing=false,last=0,raf=0;
   const set=v=>{hero.style.setProperty("--p",v.toFixed(4));hero.style.setProperty("--r",(v*100).toFixed(2));};
   function finish(){ if(done) return; done=true; p=1; set(1); hero.classList.remove("off"); cord.tabIndex=-1;
-    finishing=true; last=performance.now();
-    const t=()=>{ if(performance.now()-last>420){ finishing=false; html.classList.remove("locked"); } else setTimeout(t,80); }; t(); }
+    finishing=true; /* Hinterer Schwung: feste 650 ms ab Ende, nicht verlängern */
+    setTimeout(()=>{ finishing=false; html.classList.remove("locked"); },650); }
   function loop(){ p+=(target-p)*0.085; if(Math.abs(target-p)<0.002) p=target; set(p);
-    if(target>=1 && p>=0.998){ finish(); raf=0; return; } raf=requestAnimationFrame(loop); }
+    if(target>=1 && p>=0.99){ finish(); raf=0; return; } raf=requestAnimationFrame(loop); }
   const go=()=>{ if(!raf) raf=requestAnimationFrame(loop); };
   const push=d=>{ target=Math.max(0,Math.min(1,target+d)); if(target>.985) target=1; go(); };
   if(reduce || scrollY>10 || location.hash){ target=1; p=1; set(1); done=true; hero.classList.remove("off"); return; }
